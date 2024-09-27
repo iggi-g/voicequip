@@ -1,12 +1,17 @@
 import React from 'react';
-import { Search } from 'lucide-react';
+import { Search, Menu } from 'lucide-react';
 
-const Header = () => {
+const Header = ({ toggleSidebar }) => {
   return (
     <header className="bg-white shadow-md">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-gray-800">Voice Notes App</h1>
+          <div className="flex items-center">
+            <button onClick={toggleSidebar} className="p-2 text-gray-900 mr-4">
+              <Menu className="h-6 w-6" />
+            </button>
+            <h1 className="text-2xl font-semibold text-gray-800">Voice Notes App</h1>
+          </div>
           <div className="relative">
             <input
               type="text"
