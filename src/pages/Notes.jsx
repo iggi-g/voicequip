@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tag, Folder } from 'lucide-react';
 
 const Notes = () => {
-  const [notes, setNotes] = useState([
-    { id: 1, title: "Meeting Notes", content: "Discussed project timeline...", date: "2023-04-15", tags: ["work", "project"], folder: "Work" },
-    { id: 2, title: "Ideas for New Feature", content: "1. Implement voice commands...", date: "2023-04-14", tags: ["feature", "development"], folder: "Ideas" },
-    { id: 3, title: "Bug Report", content: "Found issue with login page...", date: "2023-04-13", tags: ["bug", "urgent"], folder: "Issues" },
-  ]);
-
+  const [notes, setNotes] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFolder, setSelectedFolder] = useState('All');
   const [selectedTag, setSelectedTag] = useState('All');
+
+  useEffect(() => {
+    const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
+    setNotes(savedNotes);
+  }, []);
 
   const folders = ['All', ...new Set(notes.map(note => note.folder))];
   const tags = ['All', ...new Set(notes.flatMap(note => note.tags))];
@@ -66,6 +66,9 @@ const Notes = () => {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-gray-600 mb-2">{note.content.substring(0, 50)}...</p>
+              {note.audioUrl && (
+                <audio src={note.audioUrl} controls className="w-full mb-2" />
+              )}
               <div className="flex items-center mb-2 text-sm text-gray-500">
                 <Folder className="h-4 w-4 mr-1" />
                 <span>{note.folder}</span>

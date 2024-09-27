@@ -1,19 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import NotionIntegration from './NotionIntegration';
+import { useNavigate } from 'react-router-dom';
 
-const RecordingSummary = ({ audioBlob, onClose, transcriptionCost }) => {
+const RecordingSummary = ({ audioBlob, onClose }) => {
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [folder, setFolder] = useState('');
   const [tags, setTags] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    generateTitleAndSummary();
+  }, []);
+
+  const generateTitleAndSummary = async () => {
+    // This is a placeholder for the ChatGPT integration
+    // In a real implementation, you would call an API endpoint here
+    const response = await fetch('/api/generate-summary', {
+      method: 'POST',
+      body: audioBlob
+    });
+    const data = await response.json();
+    setTitle(data.title);
+    setSummary(data.summary);
+  };
 
   const handleSave = () => {
-    console.log('Saving recording:', { title, summary, folder, tags });
+    const newNote = {
+      id: Date.now(),
+      title,
+      content: summary,
+      date: new Date().toISOString().split('T')[0],
+      tags: tags.split(',').map(tag => tag.trim()),
+      folder,
+      audioUrl: URL.createObjectURL(audioBlob)
+    };
+
+    const existingNotes = JSON.parse(localStorage.getItem('notes') || '[]');
+    localStorage.setItem('notes', JSON.stringify([...existingNotes, newNote]));
+
     onClose();
+    navigate('/notes');
   };
 
   return (
@@ -48,14 +78,10 @@ const RecordingSummary = ({ audioBlob, onClose, transcriptionCost }) => {
         onChange={(e) => setTags(e.target.value)}
         className="mb-4"
       />
-      <div className="text-sm text-gray-600 mb-4">
-        Estimated transcription cost: ${transcriptionCost}
-      </div>
       <div className="flex justify-end space-x-4">
         <Button variant="outline" onClick={onClose}>Cancel</Button>
         <Button onClick={handleSave}>Save Recording</Button>
       </div>
-      <NotionIntegration note={{ title, summary, folder, tags }} />
     </div>
   );
 };
