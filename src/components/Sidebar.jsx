@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Mic, FileText, History } from 'lucide-react';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen }) => {
   const location = useLocation();
 
   const navItems = [
@@ -13,7 +13,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="bg-green-600 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
+    <div className={`bg-green-600 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 transition duration-200 ease-in-out z-20`}>
       <nav>
         {navItems.map((item) => (
           <Link
