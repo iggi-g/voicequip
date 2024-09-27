@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Tag, Folder, Search } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tag, Folder } from 'lucide-react';
 
 const Notes = () => {
   const [notes, setNotes] = useState([
@@ -28,8 +29,8 @@ const Notes = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-gray-800">Your Notes</h2>
-      <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+      <h2 className="text-2xl font-semibold text-white">Your Notes</h2>
+      <div className="flex space-x-4">
         <Input
           type="text"
           placeholder="Search notes..."
@@ -60,25 +61,25 @@ const Notes = () => {
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filteredNotes.map((note) => (
-          <Card key={note.id} className="bg-white">
+          <Card key={note.id} className="bg-gray-700 text-white">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-800">{note.title}</CardTitle>
+              <CardTitle>{note.title}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 mb-2">{note.content.substring(0, 50)}...</p>
-              <div className="flex items-center mb-2 text-sm text-gray-500">
-                <Folder className="h-4 w-4 mr-1" />
-                <span>{note.folder}</span>
+              <p className="text-sm text-gray-300">{note.content.substring(0, 50)}...</p>
+              <div className="flex items-center mt-2 space-x-2">
+                <Folder className="h-4 w-4 text-green-400" />
+                <span className="text-xs text-gray-400">{note.folder}</span>
               </div>
-              <div className="flex flex-wrap mb-2">
+              <div className="flex flex-wrap mt-2">
                 {note.tags.map((tag, index) => (
-                  <span key={index} className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded mr-2 mb-2 flex items-center">
-                    <Tag className="h-3 w-3 mr-1" />
+                  <span key={index} className="bg-green-800 text-green-200 text-xs px-2 py-1 rounded mr-2 mb-2">
+                    <Tag className="inline-block h-3 w-3 mr-1" />
                     {tag}
                   </span>
                 ))}
               </div>
-              <p className="text-xs text-gray-400">{note.date}</p>
+              <p className="text-xs text-gray-400 mt-2">{note.date}</p>
             </CardContent>
           </Card>
         ))}
