@@ -3,22 +3,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import NotionIntegration from './NotionIntegration';
 
-const RecordingSummary = ({ audioBlob, onClose }) => {
+const RecordingSummary = ({ audioBlob, onClose, transcriptionCost }) => {
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [folder, setFolder] = useState('');
   const [tags, setTags] = useState('');
 
   const handleSave = () => {
-    // Here you would implement the logic to save the recording with its metadata
     console.log('Saving recording:', { title, summary, folder, tags });
     onClose();
   };
 
   return (
-    <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-      <h3 className="text-xl font-semibold text-white mb-4">Recording Summary</h3>
+    <div className="bg-white p-6 rounded-lg shadow-lg">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">Recording Summary</h3>
       <audio src={URL.createObjectURL(audioBlob)} controls className="w-full mb-4" />
       <Input
         placeholder="Title"
@@ -48,10 +48,14 @@ const RecordingSummary = ({ audioBlob, onClose }) => {
         onChange={(e) => setTags(e.target.value)}
         className="mb-4"
       />
+      <div className="text-sm text-gray-600 mb-4">
+        Estimated transcription cost: ${transcriptionCost}
+      </div>
       <div className="flex justify-end space-x-4">
         <Button variant="outline" onClick={onClose}>Cancel</Button>
         <Button onClick={handleSave}>Save Recording</Button>
       </div>
+      <NotionIntegration note={{ title, summary, folder, tags }} />
     </div>
   );
 };
