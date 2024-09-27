@@ -10,16 +10,20 @@ const Recording = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
+  const [recordingTime, setRecordingTime] = useState(0);
   const mediaRecorderRef = useRef(null);
-  const canvasRef = useRef(null);
-  const animationRef = useRef(null);
+  const timerRef = useRef(null);
 
   useEffect(() => {
     if (isRecording && !isPaused) {
-      drawWaveform();
+      timerRef.current = setInterval(() => {
+        setRecordingTime((prevTime) => prevTime + 1);
+      }, 1000);
     } else {
-      cancelAnimationFrame(animationRef.current);
+      clearInterval(timerRef.current);
     }
+
+    return () => clearInterval(timerRef.current);
   }, [isRecording, isPaused]);
 
   const startRecording = async () => {
@@ -37,6 +41,7 @@ const Recording = () => {
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
+      setRecordingTime(0);
     } catch (err) {
       console.error('Error accessing microphone:', err);
     }
@@ -61,59 +66,46 @@ const Recording = () => {
     }
   };
 
-  const drawWaveform = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    ctx.beginPath();
-    ctx.moveTo(0, canvas.height / 2);
-
-    for (let i = 0; i < canvas.width; i++) {
-      const y = canvas.height / 2 + Math.sin(i * 0.1) * 20 * Math.random();
-      ctx.lineTo(i, y);
-    }
-
-    ctx.strokeStyle = '#10B981';
-    ctx.stroke();
-
-    animationRef.current = requestAnimationFrame(drawWaveform);
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   return (
     <div className="flex flex-col items-center justify-center space-y-6">
-      <h2 className="text-2xl font-semibold text-white">Voice Recording</h2>
-      <canvas ref={canvasRef} width="300" height="100" className="bg-gray-700 rounded-lg" />
-      <div className="flex space-x-4">
-        {!isRecording ? (
-          <Button onClick={startRecording} variant="default" size="lg" className="bg-green-500 hover:bg-green-600">
-            <Mic className="mr-2 h-4 w-4" /> Start Recording
-          </Button>
-        ) : (
-          <>
-            <Button onClick={pauseRecording} variant="outline" size="lg">
-              {isPaused ? 'Resume' : 'Pause'}
-            </Button>
-            <Button onClick={() => setShowConfirmDialog(true)} variant="destructive" size="lg">
-              <StopCircle className="mr-2 h-4 w-4" /> Stop Recording
-            </Button>
-          </>
-        )}
-      </div>
+      <h2 className="text-2xl font-semibold text-gray-900">Voice Recording</h2>
+      {isRecording && (
+        <div className="bg-gray-900 text-white p-4 rounded-full flex items-center space-x-4">
+          <button onClick={() => setShowConfirmDialog(true)} className="text-red-500">
+            Cancel
+          </button>
+          <span className="text-red-500">•</span>
+          <span>{formatTime(recordingTime)}/1:00</span>
+          <button onClick={pauseRecording} className="bg-gray-700 p-2 rounded-full">
+            {isPaused ? <Mic className="h-6 w-6" /> : <Pause className="h-6 w-6" />}
+          </button>
+          <button onClick={stopRecording} className="bg-green-500 text-white px-4 py-2 rounded-full">
+            Done
+          </button>
+        </div>
+      )}
+      {!isRecording && (
+        <Button onClick={startRecording} variant="default" size="lg" className="bg-red-500 hover:bg-red-600 text-white rounded-full">
+          <Mic className="mr-2 h-4 w-4" /> Record
+        </Button>
+      )}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent>
+        <DialogContent className="bg-gray-900 text-white">
           <DialogHeader>
-            <DialogTitle>Stop Recording?</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to stop the recording? This action cannot be undone.
-            </DialogDescription>
+            <DialogTitle>Are you sure you want to cancel this recording?</DialogTitle>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
             <Button variant="destructive" onClick={() => {
               stopRecording();
               setShowConfirmDialog(false);
-            }}>Stop Recording</Button>
+            }}>Yes, cancel</Button>
+            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>No, continue recording</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
