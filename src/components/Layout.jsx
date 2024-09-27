@@ -10,15 +10,15 @@ const Layout = () => {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-900 text-white">
       <Sidebar isOpen={sidebarOpen} />
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header>
-          <button onClick={toggleSidebar} className="p-2 mr-4 lg:hidden">
+          <button onClick={toggleSidebar} className="p-2 text-white">
             <Menu className="h-6 w-6" />
           </button>
         </Header>
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-800">
           <div className="container mx-auto px-6 py-8">
             <Outlet />
           </div>
