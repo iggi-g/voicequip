@@ -3,8 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Mic, Pause, StopCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import RecordingSummary from '../components/RecordingSummary';
-import { calculateTranscriptionCost } from '../utils/transcriptionUtils';
-import NotionIntegration from '../components/NotionIntegration';
 
 const Recording = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -13,7 +11,6 @@ const Recording = () => {
   const [showSummary, setShowSummary] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [transcriptionCost, setTranscriptionCost] = useState(0);
   const mediaRecorderRef = useRef(null);
   const timerRef = useRef(null);
 
@@ -21,14 +18,13 @@ const Recording = () => {
     if (isRecording && !isPaused) {
       timerRef.current = setInterval(() => {
         setRecordingTime((prevTime) => prevTime + 1);
-        setTranscriptionCost(calculateTranscriptionCost(recordingTime + 1));
       }, 1000);
     } else {
       clearInterval(timerRef.current);
     }
 
     return () => clearInterval(timerRef.current);
-  }, [isRecording, isPaused, recordingTime]);
+  }, [isRecording, isPaused]);
 
   const startRecording = async () => {
     try {
@@ -46,7 +42,6 @@ const Recording = () => {
       mediaRecorderRef.current.start();
       setIsRecording(true);
       setRecordingTime(0);
-      setTranscriptionCost(0);
     } catch (err) {
       console.error('Error accessing microphone:', err);
     }
@@ -100,9 +95,6 @@ const Recording = () => {
           <Mic className="mr-2 h-4 w-4" /> Record
         </Button>
       )}
-      <div className="text-gray-600">
-        Estimated transcription cost: ${transcriptionCost}
-      </div>
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent className="bg-gray-900 text-white">
           <DialogHeader>
@@ -120,7 +112,6 @@ const Recording = () => {
       {showSummary && audioBlob && (
         <RecordingSummary audioBlob={audioBlob} onClose={() => setShowSummary(false)} />
       )}
-      <NotionIntegration note={{ audioBlob, recordingTime, transcriptionCost }} />
     </div>
   );
 };
