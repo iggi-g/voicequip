@@ -10,6 +10,7 @@ const RecordingSummary = ({ audioBlob, onClose }) => {
   const [summary, setSummary] = useState('');
   const [folder, setFolder] = useState('');
   const [tags, setTags] = useState('');
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,15 +18,26 @@ const RecordingSummary = ({ audioBlob, onClose }) => {
   }, []);
 
   const generateTitleAndSummary = async () => {
-    // This is a placeholder for the ChatGPT integration
-    // In a real implementation, you would call an API endpoint here
-    const response = await fetch('/api/generate-summary', {
-      method: 'POST',
-      body: audioBlob
-    });
-    const data = await response.json();
-    setTitle(data.title);
-    setSummary(data.summary);
+    try {
+      // This is a placeholder function for the ChatGPT integration
+      // In a real implementation, you would call an API endpoint here
+      const response = await mockGenerateSummary(audioBlob);
+      setTitle(response.title);
+      setSummary(response.summary);
+    } catch (err) {
+      console.error('Error generating title and summary:', err);
+      setError('Failed to generate title and summary. Please try again.');
+    }
+  };
+
+  // Placeholder function to simulate API call
+  const mockGenerateSummary = async (blob) => {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    return {
+      title: 'Generated Title',
+      summary: 'This is a placeholder summary generated for the recording.'
+    };
   };
 
   const handleSave = () => {
@@ -45,6 +57,16 @@ const RecordingSummary = ({ audioBlob, onClose }) => {
     onClose();
     navigate('/notes');
   };
+
+  if (error) {
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-lg">
+        <h3 className="text-xl font-semibold text-gray-800 mb-4">Error</h3>
+        <p className="text-red-500">{error}</p>
+        <Button onClick={onClose} className="mt-4">Close</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg">
