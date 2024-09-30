@@ -3,12 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tag, Folder } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import SummaryGenerator from '../components/SummaryGenerator';
 
 const Notes = () => {
   const [notes, setNotes] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFolder, setSelectedFolder] = useState('All');
   const [selectedTag, setSelectedTag] = useState('All');
+  const [showSummaryGenerator, setShowSummaryGenerator] = useState(false);
 
   useEffect(() => {
     const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
@@ -28,7 +31,10 @@ const Notes = () => {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-gray-800">Your Notes</h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-semibold text-gray-800">Your Notes</h2>
+        <Button onClick={() => setShowSummaryGenerator(true)}>Create Summary</Button>
+      </div>
       <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
         <Input
           type="text"
@@ -86,6 +92,12 @@ const Notes = () => {
           </Card>
         ))}
       </div>
+      {showSummaryGenerator && (
+        <SummaryGenerator
+          notes={notes}
+          onClose={() => setShowSummaryGenerator(false)}
+        />
+      )}
     </div>
   );
 };
