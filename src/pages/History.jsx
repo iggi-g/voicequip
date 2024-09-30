@@ -1,30 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { calculateTranscriptionCost } from '../utils/transcriptionUtils';
 
 const History = () => {
-  const historyItems = [
-    { id: 1, type: "Recording", title: "Team Meeting", date: "2023-04-15 14:30" },
-    { id: 2, type: "Transcription", title: "Client Call", date: "2023-04-14 10:15" },
-    { id: 3, type: "Note", title: "Project Ideas", date: "2023-04-13 09:45" },
-  ];
+  const [notes, setNotes] = useState([]);
+  const [totalCost, setTotalCost] = useState(0);
+
+  useEffect(() => {
+    const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
+    setNotes(savedNotes);
+
+    const cost = savedNotes.reduce((acc, note) => {
+      // Assuming each note has a duration property in seconds
+      return acc + calculateTranscriptionCost(note.duration || 0);
+    }, 0);
+    setTotalCost(cost);
+  }, []);
+
+  const handleRowClick = (note) => {
+    // Navigate to the note details or open a modal
+    console.log('Clicked note:', note);
+    // Implement navigation or modal opening logic here
+  };
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold">Activity History</h2>
+      <div className="bg-white p-4 rounded-lg shadow">
+        <p className="text-lg font-semibold">Total Transcription Cost: ${totalCost.toFixed(2)}</p>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Type</TableHead>
             <TableHead>Title</TableHead>
             <TableHead>Date</TableHead>
+            <TableHead>Duration</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {historyItems.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>{item.type}</TableCell>
-              <TableCell>{item.title}</TableCell>
-              <TableCell>{item.date}</TableCell>
+          {notes.map((note) => (
+            <TableRow key={note.id} onClick={() => handleRowClick(note)} className="cursor-pointer hover:bg-gray-100">
+              <TableCell>{note.title}</TableCell>
+              <TableCell>{note.date}</TableCell>
+              <TableCell>{note.duration ? `${Math.floor(note.duration / 60)}:${(note.duration % 60).toString().padStart(2, '0')}` : 'N/A'}</TableCell>
             </TableRow>
           ))}
         </TableBody>

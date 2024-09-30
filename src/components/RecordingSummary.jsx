@@ -19,25 +19,28 @@ const RecordingSummary = ({ audioBlob, onClose }) => {
 
   const generateTitleAndSummary = async () => {
     try {
-      // This is a placeholder function for the ChatGPT integration
-      // In a real implementation, you would call an API endpoint here
-      const response = await mockGenerateSummary(audioBlob);
-      setTitle(response.title);
-      setSummary(response.summary);
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'recording.webm');
+
+      const response = await fetch('/api/generate-summary', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': 'Bearer YOUR_CHATGPT_API_KEY_HERE' // Replace with your actual API key
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate summary');
+      }
+
+      const data = await response.json();
+      setTitle(data.title);
+      setSummary(data.summary);
     } catch (err) {
       console.error('Error generating title and summary:', err);
       setError('Failed to generate title and summary. Please try again.');
     }
-  };
-
-  // Placeholder function to simulate API call
-  const mockGenerateSummary = async (blob) => {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return {
-      title: 'Generated Title',
-      summary: 'This is a placeholder summary generated for the recording.'
-    };
   };
 
   const handleSave = () => {
