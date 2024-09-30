@@ -11,7 +11,6 @@ const History = () => {
     setNotes(savedNotes);
 
     const cost = savedNotes.reduce((acc, note) => {
-      // Assuming each note has a duration property in seconds
       return acc + calculateTranscriptionCost(note.duration || 0);
     }, 0);
     setTotalCost(cost);
@@ -27,7 +26,9 @@ const History = () => {
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold">Activity History</h2>
       <div className="bg-white p-4 rounded-lg shadow">
-        <p className="text-lg font-semibold">Total Transcription Cost: ${totalCost.toFixed(2)}</p>
+        <p className="text-lg font-semibold">
+          Total Transcription Cost: ${typeof totalCost === 'number' ? totalCost.toFixed(2) : '0.00'}
+        </p>
       </div>
       <Table>
         <TableHeader>
