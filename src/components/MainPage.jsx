@@ -3,14 +3,28 @@ import Header from './Header';
 import NoteList from './NoteList';
 import RecordingControls from './RecordingControls';
 import SummaryGenerator from './SummaryGenerator';
+import AskAI from './AskAI';
+import RecordingSummary from './RecordingSummary';
 
 const MainPage = () => {
   const [notes, setNotes] = useState([]);
   const [showSummaryGenerator, setShowSummaryGenerator] = useState(false);
+  const [showAskAI, setShowAskAI] = useState(false);
+  const [showRecordingSummary, setShowRecordingSummary] = useState(false);
+  const [currentRecording, setCurrentRecording] = useState(null);
   const [filter, setFilter] = useState('all');
 
   const addNote = (note) => {
     setNotes([note, ...notes]);
+  };
+
+  const deleteNote = (noteId) => {
+    setNotes(notes.filter(note => note.id !== noteId));
+  };
+
+  const handleNewRecording = (blob) => {
+    setCurrentRecording(blob);
+    setShowRecordingSummary(true);
   };
 
   const filteredNotes = notes.filter(note => {
@@ -44,9 +58,10 @@ const MainPage = () => {
             Starred
           </button>
         </div>
-        <NoteList notes={filteredNotes} />
+        <NoteList notes={filteredNotes} onDeleteNote={deleteNote} />
         <RecordingControls
-          onNewRecording={addNote}
+          onNewRecording={handleNewRecording}
+          onOpenAskAI={() => setShowAskAI(true)}
           onOpenSummaryGenerator={() => setShowSummaryGenerator(true)}
         />
       </main>
@@ -54,6 +69,22 @@ const MainPage = () => {
         <SummaryGenerator
           notes={notes}
           onClose={() => setShowSummaryGenerator(false)}
+        />
+      )}
+      {showAskAI && (
+        <AskAI
+          notes={notes}
+          onClose={() => setShowAskAI(false)}
+        />
+      )}
+      {showRecordingSummary && currentRecording && (
+        <RecordingSummary
+          audioBlob={currentRecording}
+          onClose={() => setShowRecordingSummary(false)}
+          onSave={(note) => {
+            addNote(note);
+            setShowRecordingSummary(false);
+          }}
         />
       )}
     </div>

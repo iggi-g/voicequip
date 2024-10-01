@@ -3,15 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useNavigate } from 'react-router-dom';
+import NotionIntegration from './NotionIntegration';
 
-const RecordingSummary = ({ audioBlob, onClose }) => {
+const RecordingSummary = ({ audioBlob, onClose, onSave }) => {
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [folder, setFolder] = useState('');
   const [tags, setTags] = useState('');
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     generateTitleAndSummary();
@@ -54,11 +53,7 @@ const RecordingSummary = ({ audioBlob, onClose }) => {
       audioUrl: URL.createObjectURL(audioBlob)
     };
 
-    const existingNotes = JSON.parse(localStorage.getItem('notes') || '[]');
-    localStorage.setItem('notes', JSON.stringify([...existingNotes, newNote]));
-
-    onClose();
-    navigate('/notes');
+    onSave(newNote);
   };
 
   if (error) {
@@ -103,7 +98,8 @@ const RecordingSummary = ({ audioBlob, onClose }) => {
         onChange={(e) => setTags(e.target.value)}
         className="mb-4"
       />
-      <div className="flex justify-end space-x-4">
+      <NotionIntegration note={{ title, content: summary, tags: tags.split(',').map(tag => tag.trim()) }} />
+      <div className="flex justify-end space-x-4 mt-4">
         <Button variant="outline" onClick={onClose}>Cancel</Button>
         <Button onClick={handleSave}>Save Recording</Button>
       </div>
