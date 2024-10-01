@@ -70,20 +70,20 @@ const RecordingControls = ({ onNewRecording, onOpenAskAI, onOpenSummaryGenerator
     <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex justify-center space-x-4 border-t">
       {isRecording ? (
         <div className="flex items-center space-x-4">
-          <Button onClick={() => stopRecording()} variant="destructive">Cancel</Button>
+          <Button onClick={() => stopRecording()} variant="destructive" className="rounded-full">Cancel</Button>
           <span className="text-lg font-semibold">{formatTime(recordingTime)}/1:00</span>
-          <Button onClick={pauseRecording} variant="outline">
+          <Button onClick={pauseRecording} variant="outline" className="rounded-full">
             {isPaused ? <Mic className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
           </Button>
-          <Button onClick={stopRecording} variant="default">Done</Button>
+          <Button onClick={stopRecording} variant="default" className="rounded-full">Done</Button>
         </div>
       ) : (
         <>
-          <Button onClick={startRecording} variant="default" className="bg-red-500 hover:bg-red-600 text-white">
+          <Button onClick={startRecording} variant="default" className="bg-red-500 hover:bg-red-600 text-white rounded-full">
             <Mic className="mr-2 h-4 w-4" /> Record
           </Button>
-          <Button onClick={onOpenAskAI} variant="outline">Ask my AI</Button>
-          <Button onClick={onOpenSummaryGenerator} variant="outline">Create</Button>
+          <Button onClick={onOpenAskAI} variant="outline" className="rounded-full">Ask my AI</Button>
+          <Button onClick={onOpenSummaryGenerator} variant="outline" className="rounded-full">Create</Button>
         </>
       )}
     </div>

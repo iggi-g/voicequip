@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 const SummaryGenerator = ({ notes, onClose }) => {
   const [selectedType, setSelectedType] = useState('');
@@ -26,7 +27,7 @@ const SummaryGenerator = ({ notes, onClose }) => {
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">What do you want to create?</h2>
-          <button onClick={onClose}>
+          <button onClick={onClose} className="rounded-full p-2 hover:bg-gray-100">
             <X className="h-6 w-6" />
           </button>
         </div>
@@ -34,7 +35,7 @@ const SummaryGenerator = ({ notes, onClose }) => {
           {summaryTypes.map((type) => (
             <button
               key={type.id}
-              className={`p-2 rounded ${
+              className={`p-2 rounded-full ${
                 selectedType === type.id ? 'bg-blue-100' : 'bg-gray-100'
               }`}
               onClick={() => setSelectedType(type.id)}
@@ -50,7 +51,7 @@ const SummaryGenerator = ({ notes, onClose }) => {
             <label key={note.id} className="flex items-center mb-2">
               <input
                 type="checkbox"
-                className="mr-2"
+                className="mr-2 rounded-full"
                 checked={selectedNotes.includes(note.id)}
                 onChange={() => {
                   setSelectedNotes((prev) =>
@@ -64,13 +65,13 @@ const SummaryGenerator = ({ notes, onClose }) => {
             </label>
           ))}
         </div>
-        <button
-          className="w-full bg-black text-white py-2 rounded-full"
+        <Button
+          className="w-full bg-black text-white rounded-full"
           onClick={handleCreate}
           disabled={!selectedType || selectedNotes.length === 0}
         >
           Create
-        </button>
+        </Button>
       </div>
     </div>
   );

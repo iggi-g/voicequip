@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './Header';
 import NoteList from './NoteList';
 import RecordingControls from './RecordingControls';
@@ -14,12 +14,22 @@ const MainPage = () => {
   const [currentRecording, setCurrentRecording] = useState(null);
   const [filter, setFilter] = useState('all');
 
+  useEffect(() => {
+    // Load notes from localStorage
+    const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
+    setNotes(savedNotes);
+  }, []);
+
   const addNote = (note) => {
-    setNotes([note, ...notes]);
+    const updatedNotes = [note, ...notes];
+    setNotes(updatedNotes);
+    localStorage.setItem('notes', JSON.stringify(updatedNotes));
   };
 
   const deleteNote = (noteId) => {
-    setNotes(notes.filter(note => note.id !== noteId));
+    const updatedNotes = notes.filter(note => note.id !== noteId);
+    setNotes(updatedNotes);
+    localStorage.setItem('notes', JSON.stringify(updatedNotes));
   };
 
   const handleNewRecording = (blob) => {
@@ -38,21 +48,21 @@ const MainPage = () => {
     <div className="min-h-screen bg-gray-100">
       <Header />
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-4">
+        <div className="mb-4 flex space-x-4">
           <button
-            className={`mr-4 ${filter === 'all' ? 'font-bold' : ''}`}
+            className={`rounded-full px-4 py-2 ${filter === 'all' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'}`}
             onClick={() => setFilter('all')}
           >
             All
           </button>
           <button
-            className={`mr-4 ${filter === 'shared' ? 'font-bold' : ''}`}
+            className={`rounded-full px-4 py-2 ${filter === 'shared' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'}`}
             onClick={() => setFilter('shared')}
           >
             Shared
           </button>
           <button
-            className={`mr-4 ${filter === 'starred' ? 'font-bold' : ''}`}
+            className={`rounded-full px-4 py-2 ${filter === 'starred' ? 'bg-blue-500 text-white' : 'bg-white text-gray-800'}`}
             onClick={() => setFilter('starred')}
           >
             Starred
