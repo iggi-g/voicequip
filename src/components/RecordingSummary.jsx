@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import NotionIntegration from './NotionIntegration';
+import { generateMockSummary } from '../utils/mockDataUtils';
 
 const RecordingSummary = ({ audioBlob, onClose, onSave }) => {
   const [title, setTitle] = useState('');
@@ -18,24 +19,9 @@ const RecordingSummary = ({ audioBlob, onClose, onSave }) => {
 
   const generateTitleAndSummary = async () => {
     try {
-      const formData = new FormData();
-      formData.append('audio', audioBlob, 'recording.webm');
-
-      const response = await fetch('/api/generate-summary', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Authorization': 'Bearer YOUR_CHATGPT_API_KEY_HERE' // Replace with your actual API key
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate summary');
-      }
-
-      const data = await response.json();
-      setTitle(data.title);
-      setSummary(data.summary);
+      const { title, summary } = await generateMockSummary(audioBlob);
+      setTitle(title);
+      setSummary(summary);
     } catch (err) {
       console.error('Error generating title and summary:', err);
       setError('Failed to generate title and summary. Please try again.');
