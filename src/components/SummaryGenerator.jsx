@@ -1,68 +1,78 @@
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
+import { X } from 'lucide-react';
 
 const SummaryGenerator = ({ notes, onClose }) => {
+  const [selectedType, setSelectedType] = useState('');
   const [selectedNotes, setSelectedNotes] = useState([]);
-  const [summaryType, setSummaryType] = useState('summary');
 
-  const handleNoteSelection = (noteId) => {
-    setSelectedNotes(prev => 
-      prev.includes(noteId) ? prev.filter(id => id !== noteId) : [...prev, noteId]
-    );
-  };
+  const summaryTypes = [
+    { id: 'summary', label: 'Summary', icon: '📝' },
+    { id: 'tweet', label: 'Tweet', icon: '🐦' },
+    { id: 'blog', label: 'Blog post', icon: '📰' },
+    { id: 'main-points', label: 'Main points', icon: '📊' },
+    { id: 'email', label: 'Email', icon: '📧' },
+    { id: 'todo', label: 'To-do list', icon: '✅' },
+    { id: 'cleanup', label: 'Cleanup', icon: '🧹' },
+  ];
 
-  const generateSummary = async () => {
-    // This is where you'd integrate with the ChatGPT API
-    console.log(`Generating ${summaryType} for notes:`, selectedNotes);
-    // Implement API call here
+  const handleCreate = () => {
+    // Implement summary creation logic here
+    console.log('Creating summary:', selectedType, selectedNotes);
     onClose();
   };
 
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Generate Summary</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <Select value={summaryType} onValueChange={setSummaryType}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select summary type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="summary">Summary</SelectItem>
-              <SelectItem value="tweet">Tweet</SelectItem>
-              <SelectItem value="blogPost">Blog post</SelectItem>
-              <SelectItem value="mainPoints">Main points</SelectItem>
-              <SelectItem value="email">Email</SelectItem>
-              <SelectItem value="todoList">To-do list</SelectItem>
-              <SelectItem value="cleanup">Cleanup</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="max-h-[200px] overflow-y-auto">
-            {notes.map(note => (
-              <div key={note.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`note-${note.id}`}
-                  checked={selectedNotes.includes(note.id)}
-                  onCheckedChange={() => handleNoteSelection(note.id)}
-                />
-                <label htmlFor={`note-${note.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  {note.title}
-                </label>
-              </div>
-            ))}
-          </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold">What do you want to create?</h2>
+          <button onClick={onClose}>
+            <X className="h-6 w-6" />
+          </button>
         </div>
-        <DialogFooter>
-          <Button onClick={onClose} variant="outline">Cancel</Button>
-          <Button onClick={generateSummary} disabled={selectedNotes.length === 0}>Generate</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          {summaryTypes.map((type) => (
+            <button
+              key={type.id}
+              className={`p-2 rounded ${
+                selectedType === type.id ? 'bg-blue-100' : 'bg-gray-100'
+              }`}
+              onClick={() => setSelectedType(type.id)}
+            >
+              <span className="text-2xl">{type.icon}</span>
+              <span className="block text-sm">{type.label}</span>
+            </button>
+          ))}
+        </div>
+        <h3 className="font-semibold mb-2">Select the notes</h3>
+        <div className="max-h-40 overflow-y-auto mb-4">
+          {notes.map((note) => (
+            <label key={note.id} className="flex items-center mb-2">
+              <input
+                type="checkbox"
+                className="mr-2"
+                checked={selectedNotes.includes(note.id)}
+                onChange={() => {
+                  setSelectedNotes((prev) =>
+                    prev.includes(note.id)
+                      ? prev.filter((id) => id !== note.id)
+                      : [...prev, note.id]
+                  );
+                }}
+              />
+              {note.title}
+            </label>
+          ))}
+        </div>
+        <button
+          className="w-full bg-black text-white py-2 rounded-full"
+          onClick={handleCreate}
+          disabled={!selectedType || selectedNotes.length === 0}
+        >
+          Create
+        </button>
+      </div>
+    </div>
   );
 };
 
