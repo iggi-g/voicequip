@@ -18,10 +18,6 @@ const Notes = () => {
     setNotes(savedNotes);
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes));
-  }, [notes]);
-
   const folders = ['All', ...new Set(notes.map(note => note.folder))];
   const tags = ['All', ...new Set(notes.flatMap(note => note.tags))];
 

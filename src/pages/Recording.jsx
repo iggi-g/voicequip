@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Mic, Pause, StopCircle } from 'lucide-react';
 import RecordingSummary from '../components/RecordingSummary';
+import { useNavigate } from 'react-router-dom';
 
 const Recording = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -11,6 +12,7 @@ const Recording = () => {
   const [recordingTime, setRecordingTime] = useState(0);
   const mediaRecorderRef = useRef(null);
   const timerRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isRecording && !isPaused) {
@@ -71,11 +73,13 @@ const Recording = () => {
   };
 
   const handleSaveRecording = (newNote) => {
-    // Here you would typically save the note to your state or backend
-    console.log('Saving new note:', newNote);
-    // Reset the recording state
-    setAudioBlob(null);
-    setShowSummary(false);
+    // Save the note to localStorage
+    const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
+    const updatedNotes = [newNote, ...savedNotes];
+    localStorage.setItem('notes', JSON.stringify(updatedNotes));
+
+    // Navigate to the Notes page
+    navigate('/notes');
   };
 
   return (

@@ -15,10 +15,10 @@ const RecordingSummary = ({ audioBlob, onClose, onSave, isOpen }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && audioBlob) {
       generateTitleAndSummary();
     }
-  }, [isOpen]);
+  }, [isOpen, audioBlob]);
 
   const generateTitleAndSummary = async () => {
     try {
@@ -67,7 +67,7 @@ const RecordingSummary = ({ audioBlob, onClose, onSave, isOpen }) => {
           <DialogTitle>Recording Summary</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <audio src={URL.createObjectURL(audioBlob)} controls className="w-full mb-4" />
+          <audio src={audioBlob ? URL.createObjectURL(audioBlob) : ''} controls className="w-full mb-4" />
           <Input
             placeholder="Title"
             value={title}
