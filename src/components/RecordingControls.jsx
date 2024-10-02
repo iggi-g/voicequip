@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Mic, Pause, StopCircle, MessageCircle } from 'lucide-react';
+import { Mic, Pause, StopCircle, MessageCircle, PenTool } from 'lucide-react';
 
 const RecordingControls = ({ onNewRecording, onOpenAskAI, onOpenSummaryGenerator }) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -85,7 +85,10 @@ const RecordingControls = ({ onNewRecording, onOpenAskAI, onOpenSummaryGenerator
           <Button onClick={onOpenAskAI} variant="outline" className="rounded-full">
             <MessageCircle className="mr-2 h-4 w-4" /> Ask my AI
           </Button>
-          <Button onClick={onOpenSummaryGenerator} variant="outline" className="rounded-full">Create</Button>
+          <Button onClick={onOpenSummaryGenerator} variant="outline" className="rounded-full flex items-center">
+            <PenTool className="mr-2 h-4 w-4" />
+            <span className="font-medium">Create</span>
+          </Button>
         </>
       )}
     </div>
