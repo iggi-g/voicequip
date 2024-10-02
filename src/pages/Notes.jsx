@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tag, Folder } from 'lucide-react';
+import { Tag, Folder, Play } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import SummaryGenerator from '../components/SummaryGenerator';
 
@@ -17,6 +17,10 @@ const Notes = () => {
     const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
     setNotes(savedNotes);
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('notes', JSON.stringify(notes));
+  }, [notes]);
 
   const folders = ['All', ...new Set(notes.map(note => note.folder))];
   const tags = ['All', ...new Set(notes.flatMap(note => note.tags))];

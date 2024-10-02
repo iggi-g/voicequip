@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Mic, Pause, StopCircle } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import RecordingSummary from '../components/RecordingSummary';
 
 const Recording = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showSummary, setShowSummary] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -72,22 +70,27 @@ const Recording = () => {
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  const handleSaveRecording = (newNote) => {
+    // Here you would typically save the note to your state or backend
+    console.log('Saving new note:', newNote);
+    // Reset the recording state
+    setAudioBlob(null);
+    setShowSummary(false);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center space-y-6">
       <h2 className="text-2xl font-semibold text-gray-900">Voice Recording</h2>
       {isRecording && (
         <div className="bg-gray-900 text-white p-4 rounded-full flex items-center space-x-4">
-          <button onClick={() => setShowConfirmDialog(true)} className="text-red-500">
-            Cancel
-          </button>
           <span className="text-red-500">•</span>
           <span>{formatTime(recordingTime)}</span>
-          <button onClick={pauseRecording} className="bg-gray-700 p-2 rounded-full">
+          <Button onClick={pauseRecording} variant="ghost" size="sm" className="rounded-full">
             {isPaused ? <Mic className="h-6 w-6" /> : <Pause className="h-6 w-6" />}
-          </button>
-          <button onClick={stopRecording} className="bg-green-500 text-white px-4 py-2 rounded-full">
-            Done
-          </button>
+          </Button>
+          <Button onClick={stopRecording} variant="ghost" size="sm" className="rounded-full">
+            <StopCircle className="h-6 w-6" />
+          </Button>
         </div>
       )}
       {!isRecording && (
@@ -95,23 +98,12 @@ const Recording = () => {
           <Mic className="mr-2 h-4 w-4" /> Record
         </Button>
       )}
-      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="bg-gray-900 text-white">
-          <DialogHeader>
-            <DialogTitle>Are you sure you want to cancel this recording?</DialogTitle>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="destructive" onClick={() => {
-              stopRecording();
-              setShowConfirmDialog(false);
-            }}>Yes, cancel</Button>
-            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>No, continue recording</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      {showSummary && audioBlob && (
-        <RecordingSummary audioBlob={audioBlob} onClose={() => setShowSummary(false)} />
-      )}
+      <RecordingSummary
+        audioBlob={audioBlob}
+        isOpen={showSummary}
+        onClose={() => setShowSummary(false)}
+        onSave={handleSaveRecording}
+      />
     </div>
   );
 };
